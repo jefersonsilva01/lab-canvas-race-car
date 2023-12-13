@@ -10,7 +10,7 @@ body {
 
 .game-intro p {
   font-size: 18px;
-  font-family: "Verdana"
+  font-family: "Verdana";
 }
 
 .logo-img {
@@ -32,7 +32,11 @@ body button {
   margin-bottom: 20px;
 }
 
+body button:hover {
+  background-color: #cc212a;
+}
+
 #game-board {
-    float: left;
-    padding: 20px 0px;
+  float: left;
+  padding: 20px 0px;
 }
