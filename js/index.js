@@ -6,19 +6,35 @@ window.onload = () => {
   let canvas = document.getElementById('canvas');
   let context = canvas.getContext('2d');
 
-  let carPositionX, obstaclePositionX, obstaclePositionY, obstacleSizeX, points
+  let carPositionX, obstaclePositionX, obstaclePositionY, obstacleSizeX, points, message, p
 
+  // endGame
+  function endGame() {
+    message = `GAME OVER, your score is: ${points + 1}`;
+    p = document.createElement('p');
+    p.textContent = message;
+
+    document.querySelector('.game-intro').appendChild(p);
+  }
+
+  // Draw points
+  function drawPoints() {
+    points++;
+
+    context.font = 'bold 16pt Arial'
+    context.fillText(`Points: ${points}`, 70, 80);
+  }
 
   // Check if colision
   function checkIfColision(idIntervalUpdateObstacles) {
     if (450 === obstaclePositionY + 15 && (carPositionX >= obstaclePositionX && carPositionX <= (obstaclePositionX + obstacleSizeX))) {
-      document.getElementById('start-button').removeAttribute('disabled');
       clearInterval(idIntervalUpdateObstacles);
+      document.getElementById('start-button').removeAttribute('disabled');
+      endGame();
     }
   }
 
   // Draw obstacles
-
   function drawObstacles(obstaclePositionX, obstaclePositionY, obstacleSizeX) {
     context.beginPath();
     context.rect(obstaclePositionX, obstaclePositionY, obstacleSizeX, 25);
@@ -30,24 +46,15 @@ window.onload = () => {
   }
 
   function updateObstacles() {
-    context.clearRect(obstaclePositionX, obstaclePositionY, obstacleSizeX, 25);
-    drawRoad();
-
     if (obstaclePositionY < 690) {
       obstaclePositionY += 15;
-      setTimeout(() => {
-        drawObstacles(obstaclePositionX, obstaclePositionY, obstacleSizeX);
-      }, 5);
+      drawObstacles(obstaclePositionX, obstaclePositionY, obstacleSizeX);
     } else {
       obstaclePositionX = Math.floor(Math.random() * (249 - 65 + 1)) + 65;
       obstaclePositionY = 0;
       obstacleSizeX = Math.floor(Math.random() * (190 - 50 + 1)) + 50;
-
-      setTimeout(() => {
-        drawObstacles(obstaclePositionX, obstaclePositionY, obstacleSizeX);
-      }, 10);
+      drawObstacles(obstaclePositionX, obstaclePositionY, obstacleSizeX);
     }
-    drawCar(carPositionX);
   }
 
   // Draw road
@@ -72,8 +79,6 @@ window.onload = () => {
   function moveCar(positionX) {
     if (positionX > 57 && positionX < 380) {
       carPositionX = positionX;
-      drawRoad();
-      drawCar(carPositionX);
     };
   }
 
@@ -81,14 +86,23 @@ window.onload = () => {
     switch (e.keyCode) {
       // Move left
       case 37:
-        moveCar(carPositionX - 10);
+        moveCar(carPositionX - 20);
         break;
 
       // Move right
       case 39:
-        moveCar(carPositionX + 10);
+        moveCar(carPositionX + 20);
         break;
     }
+  }
+
+  function updateGame() {
+    drawRoad();
+    drawCar(carPositionX);
+    setTimeout(() => {
+      drawPoints();
+      updateObstacles();
+    }, 1);
   }
 
   function startGame() {
@@ -108,10 +122,10 @@ window.onload = () => {
       drawObstacles(obstaclePositionX, obstaclePositionY, obstacleSizeX);
     }, 1000);
 
-    let idIntervalUpdateObstacles = setInterval(() => {
-      updateObstacles()
-      checkIfColision(idInterval);
-    }, 350);
-
+    const idIntervalUpdateObstacles = setInterval(() => {
+      // context.clearRect(0, 0, 500, 700);
+      updateGame();
+      checkIfColision(idIntervalUpdateObstacles);
+    }, 150);
   };
 }
